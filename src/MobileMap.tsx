@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import IsoCanvas from './architecture/components/IsoCanvas'
 import type { ArchitectureData } from './architecture/components/ArchitectureMap'
 import { clearView, select, setActiveFlow, useMapView } from './architecture/stores/useMapView'
@@ -38,13 +38,99 @@ export default function MobileMap({ data }: { data: ArchitectureData }) {
 
   /**
    * The camera lives inside IsoCanvas and is not exposed. Its keyboard handler
-   * is, though — so a zoom button sends the same key a laptop user would press.
+   * is, though, so a zoom button sends the same key a laptop user would press.
    */
   const sendKey = (key: string) => {
-    const surface = frame.current?.querySelector<HTMLElement>('[tabindex]')
+    const surface = frame.current?.querySelector<HTMLElement>('[role="application"]')
     surface?.focus()
     surface?.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }))
   }
+
+  /**
+   * Pinch to zoom.
+   *
+   * The camera knows two inputs: a wheel, which zooms about a point, and one
+   * dragging pointer, which pans. Given two fingers it simply follows the
+   * first one, so a pinch slid the map sideways and left the scale alone.
+   *
+   * Two things are needed to fix that, and the second is the load-bearing
+   * one. Each change in the distance between the fingers becomes a wheel
+   * event at their midpoint, which the camera already knows how to zoom
+   * about. And while two fingers are down, `pointermove` is stopped in the
+   * capture phase before it reaches React's root listener — otherwise the pan
+   * recomputes the view from the frozen start of its gesture on every move,
+   * throwing the zoom away as fast as it is applied.
+   */
+  useEffect(() => {
+    const surface = frame.current?.querySelector<HTMLElement>('[role="application"]')
+    if (surface === null || surface === undefined) return
+
+    let touching = 0
+    let spread: number | null = null
+
+    const pair = (touches: TouchList) => {
+      const [a, b] = [touches[0], touches[1]]
+      return a === undefined || b === undefined ? null : { a, b }
+    }
+
+    const blockPan = (event: PointerEvent) => {
+      if (touching >= 2) {
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+      }
+    }
+
+    const onStart = (event: TouchEvent) => {
+      touching = event.touches.length
+      const touches = pair(event.touches)
+      if (touching === 2 && touches !== null) {
+        spread = Math.hypot(touches.a.clientX - touches.b.clientX, touches.a.clientY - touches.b.clientY)
+      }
+    }
+
+    const onMove = (event: TouchEvent) => {
+      touching = event.touches.length
+      const touches = pair(event.touches)
+      if (touching !== 2 || touches === null || spread === null || spread <= 0) return
+      event.preventDefault()
+      const next = Math.hypot(
+        touches.a.clientX - touches.b.clientX,
+        touches.a.clientY - touches.b.clientY,
+      )
+      const factor = next / spread
+      if (next <= 0 || Math.abs(factor - 1) < 1e-6) return
+      spread = next
+      // The camera zooms by exp(-deltaY * 0.0015), so invert that to ask for
+      // exactly the factor the fingers just described.
+      surface.dispatchEvent(
+        new WheelEvent('wheel', {
+          deltaY: -Math.log(factor) / 0.0015,
+          clientX: (touches.a.clientX + touches.b.clientX) / 2,
+          clientY: (touches.a.clientY + touches.b.clientY) / 2,
+          bubbles: true,
+          cancelable: true,
+        }),
+      )
+    }
+
+    const onEnd = (event: TouchEvent) => {
+      touching = event.touches.length
+      if (touching < 2) spread = null
+    }
+
+    document.addEventListener('pointermove', blockPan, true)
+    surface.addEventListener('touchstart', onStart, { passive: false })
+    surface.addEventListener('touchmove', onMove, { passive: false })
+    surface.addEventListener('touchend', onEnd)
+    surface.addEventListener('touchcancel', onEnd)
+    return () => {
+      document.removeEventListener('pointermove', blockPan, true)
+      surface.removeEventListener('touchstart', onStart)
+      surface.removeEventListener('touchmove', onMove)
+      surface.removeEventListener('touchend', onEnd)
+      surface.removeEventListener('touchcancel', onEnd)
+    }
+  }, [])
 
   const node = selection?.kind === 'node' ? data.nodes.find((n) => n.id === selection.id) : undefined
   const edge = selection?.kind === 'edge' ? data.edges.find((e) => e.id === selection.id) : undefined
