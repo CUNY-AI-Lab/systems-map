@@ -3,14 +3,11 @@ import type { ArchitectureData } from './architecture/components/ArchitectureMap
 /**
  * The map, for screens that cannot hold it.
  *
- * The isometric view is a pan-and-zoom canvas flanked by a rail and a reading
- * panel; below about 1024px the canvas is squeezed to nothing and the page
- * scrolls sideways. Rather than shrink a spatial view until it is unusable,
- * narrow screens get the same authored content in the shape a phone is good
- * at: the journeys as numbered steps, and the services as a readable list.
+ * The written version of the same graph, shown under the map on narrow
+ * screens: the journeys as numbered steps, and the services as a list.
  *
- * It reads the identical `graph.ts` data, so there is no second description of
- * the fleet to keep in sync — only a second way of laying it out.
+ * It reads the same `graph.ts` data, so there is no second description of the
+ * fleet to keep in sync, only a second way of laying it out.
  */
 
 const MONO = '"IBM Plex Mono", ui-monospace, monospace'
@@ -63,7 +60,7 @@ export default function FleetOutline({ data }: { data: ArchitectureData }) {
         Journeys
       </h2>
       <p style={{ margin: '0 0 1.8rem', color: '#565247' }}>
-        The routes a real request travels. Every step below is a call that exists in the code.
+        How a request moves through the Lab, one step at a time.
       </p>
 
       {data.flows.map((flow) => (

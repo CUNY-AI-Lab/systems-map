@@ -1,8 +1,7 @@
-# Fleet map
+# Systems map
 
-An interactive map of the CUNY AI Lab's software, built to be shown to
-colleagues: what each service does, and the route a request actually travels
-through the fleet.
+A map of the CUNY AI Lab's systems, built to be shown to colleagues: what each
+service does, and how a request travels between them.
 
 Built with the [architecture-map](https://github.com/almendili/skills/tree/main/architecture-map)
 skill, adapted from its single-repository design to span nine.
@@ -13,15 +12,16 @@ skill, adapted from its single-repository design to span nine.
 measured.**
 
 No scanner can say what a subsystem is *for*, and nobody can keep file counts
-honest by hand. So every building's size and shape falls out of
-`scripts/fleet-measure.mjs` reading the real repositories, and every sentence
-about what a service does was written by reading its code.
+honest by hand. Every building's size and shape comes from
+`scripts/fleet-measure.mjs` reading the repositories; every sentence about what
+a service does was written by reading its code.
 
-The second half of the rule matters more: **no edge is drawn that cannot be
-traced to a line of code.** A plausible arrow is worse than a missing one,
-because the map's whole authority is that everything on it is real. Where a
-connection people expect turns out not to exist — the studios do not call the
-container service, for instance — the map says so rather than drawing it.
+The second half of the rule carries more weight: **add no edge that cannot be
+traced to a call in the code.** A plausible arrow is worse than a missing one,
+since the only thing that makes the drawing worth trusting is that its lines
+are calls. That holds when the missing connection is one people expect to find:
+the studios do not call the container service, and the map leaves that space
+empty.
 
 ## Layout
 

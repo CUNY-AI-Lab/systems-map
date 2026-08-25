@@ -50,7 +50,7 @@ export default function MobileMap({ data }: { data: ArchitectureData }) {
    * Pinch to zoom.
    *
    * The camera knows two inputs: a wheel, which zooms about a point, and one
-   * dragging pointer, which pans. Given two fingers it simply follows the
+   * dragging pointer, which pans. Given two fingers it follows the
    * first one, so a pinch slid the map sideways and left the scale alone.
    *
    * Two things are needed to fix that, and the second is the load-bearing
@@ -101,7 +101,7 @@ export default function MobileMap({ data }: { data: ArchitectureData }) {
       if (next <= 0 || Math.abs(factor - 1) < 1e-6) return
       spread = next
       // The camera zooms by exp(-deltaY * 0.0015), so invert that to ask for
-      // exactly the factor the fingers just described.
+      // exactly the factor the fingers described.
       surface.dispatchEvent(
         new WheelEvent('wheel', {
           deltaY: -Math.log(factor) / 0.0015,
@@ -194,7 +194,7 @@ export default function MobileMap({ data }: { data: ArchitectureData }) {
         })}
       </div>
 
-      {/* IsoCanvas is `flex: 1`, so it needs a flex column with a real height
+      {/* IsoCanvas is `flex: 1`, so it needs a flex column with a set height
           to grow into — as a plain block child it collapses to zero. */}
       <div
         ref={frame}
@@ -308,7 +308,7 @@ export default function MobileMap({ data }: { data: ArchitectureData }) {
         {node === undefined && flow === undefined && edge === undefined && (
           <p style={{ margin: '0.8rem 0 0', color: '#7d776a', fontSize: '0.9rem' }}>
             Pick a journey above to watch a request travel it, or tap any building to read about it.
-            Drag to move the map.
+            Drag to move the map, and pinch to zoom.
           </p>
         )}
       </div>

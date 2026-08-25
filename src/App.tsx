@@ -8,10 +8,9 @@ import { useWideEnough } from './useWideEnough'
 /**
  * The page around the map.
  *
- * The map itself is a full-height application, so it gets the whole viewport
- * once you reach it. What sits above is a plain-language on-ramp for someone
- * who has never heard of any of these services — the map is the reward for
- * scrolling, not the first thing that has to be understood.
+ * The map is a full-height application, so it takes the whole viewport once
+ * you reach it. Above it sits a short plain-language introduction for someone
+ * who has never heard of any of these services.
  */
 
 const SHELL: React.CSSProperties = {
@@ -82,7 +81,7 @@ export default function App() {
               margin: '0 0 1.2rem',
             }}
           >
-            How the Lab fits together
+            The Lab&rsquo;s systems
           </h1>
           <p
             style={{
@@ -94,8 +93,8 @@ export default function App() {
             }}
           >
             The Lab runs a handful of services that let people at CUNY sign in once and use AI
-            tools without handing their work to a vendor. This map shows what each service does,
-            and the route a request actually takes through them.
+            tools without handing their work to a vendor. This map covers what each service does
+            and how a request travels between them.
           </p>
         </div>
       </header>
@@ -131,28 +130,22 @@ export default function App() {
           {wideEnough ? (
             <>
               <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-                Every building is one real piece of software. Its size is measured from the code,
-                so taller and wider means more code doing more work. The lines between buildings
-                are the calls those services genuinely make to each other.
+                Each building is one service, and bigger buildings hold more code. The lines
+                between them are the calls they make to each other.
               </p>
               <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-                Start by pressing one of the journeys in the left-hand list. A dot then travels
-                the route a real request takes, stopping at each service along the way with a note
-                on what happens there. Click any building for a plain description first, with the
-                technical detail underneath.
+                Start with a journey from the left-hand list. A dot follows the route a request
+                takes, stopping at each service with a note on what happens there. Click a
+                building for a plain description, with the technical detail underneath.
               </p>
             </>
           ) : (
             <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-              Every building is one real service, sized by how much code it holds. Pick a journey
+              Each building is one service, and bigger buildings hold more code. Pick a journey
               to watch a request travel it, or tap a building to read about it. Drag to move the
-              map. Everything it shows is written out underneath as well.
+              map, and pinch to zoom.
             </p>
           )}
-          <p style={{ maxWidth: '65ch', margin: 0, color: '#565247' }}>
-            Nothing here is drawn from imagination. If a step is listed, some line of code makes
-            that call.
-          </p>
         </section>
 
         <section id="map" style={{ borderTop: '1px solid var(--rule)' }}>
@@ -184,7 +177,7 @@ export default function App() {
             >
               architecture-map
             </a>{' '}
-            skill. Measurements refresh from the source repositories; the descriptions are
+            skill. Sizes and counts come from the source repositories; the descriptions are
             written by hand.
           </p>
           <p style={{ margin: 0 }}>

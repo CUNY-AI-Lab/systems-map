@@ -7,5 +7,5 @@ import react from '@vitejs/plugin-react'
  */
 export default defineConfig({
   plugins: [react()],
-  base: process.env.SITE_BASE ?? '/cail-fleet-map/',
+  base: process.env.SITE_BASE ?? '/systems-map/',
 })
