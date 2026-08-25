@@ -34,12 +34,12 @@ const AUTHORED: Authored[] = [
     group: 'front-door',
     whatItDoes:
       'Everything at tools.ailab.gc.cuny.edu arrives here first. Doorway is the only part of the ' +
-      'Lab that talks to [[CUNY Login]], and once you have signed in it passes you through to ' +
-      'whichever tool you asked for — you never sign in to the tools themselves.',
+      'Lab that talks to [[CUNY Login]]. Once you have signed in, it passes you through to ' +
+      'whichever tool you asked for, so you never sign in to the tools themselves.',
     howItsBuilt:
-      'Tools are reached over private Worker-to-Worker bindings rather than public addresses, so ' +
-      'none of them can be called directly from the internet. The route table refuses anything it ' +
-      'has not been told about: the default decision is deny.',
+      'Tools are reached over private Worker-to-Worker bindings, so none of them can be called ' +
+      'directly from the internet. The route table\'s default decision is deny, so it refuses any ' +
+      'path it has not been told about.',
     files: ['src/doorway.ts', 'src/worker.ts', 'config/route-policy.json'],
     stack: ['Cloudflare Workers', 'service bindings', 'signed session cookie'],
   },
@@ -50,12 +50,12 @@ const AUTHORED: Authored[] = [
     role: 'the handshake with CUNY',
     group: 'front-door',
     whatItDoes:
-      'Runs the actual conversation with CUNY Login and turns the answer into a Lab identity. ' +
-      'Your CUNY account never becomes a Lab username — it becomes a stable pseudonym.',
+      'Runs the conversation with CUNY Login and turns the answer into a stable pseudonym. That ' +
+      'pseudonym stands in for your CUNY account everywhere else in the Lab.',
     howItsBuilt:
-      'The pseudonym is a [[salted derivation]] of the CUNY subject, so it is stable for you and ' +
-      'unguessable to anyone else — including the Lab. Services downstream know that you are the ' +
-      'same person as last week without being told who you are.',
+      'The pseudonym is a [[salted derivation]] of the CUNY subject. It stays the same for you ' +
+      'week to week, and it cannot be reversed to recover your CUNY account. Services downstream ' +
+      'can tell you are the same person as last time without learning your name.',
     files: ['src/oidc.ts', 'src/identity.ts'],
     stack: ['OpenID Connect', 'Web Crypto', 'jose'],
   },
@@ -66,12 +66,12 @@ const AUTHORED: Authored[] = [
     role: 'the gate for automated callers',
     group: 'front-door',
     whatItDoes:
-      'Lets an approved staff member point an AI assistant at the Lab’s admissions tools, so ' +
-      'reviewing applications can happen from a coding agent instead of only in a browser.',
+      'Lets an approved staff member point an AI assistant at the Lab\'s admissions tools, so ' +
+      'reviewing applications can happen from a coding agent as well as in a browser.',
     howItsBuilt:
-      'It is a full [[OAuth]] server with consent stored in a durable object, and every token ' +
-      'exchange re-checks that the operator is still an administrator — an old token does not ' +
-      'outlive the permission behind it.',
+      'It is a full [[OAuth]] server with consent stored in a durable object. Every token ' +
+      'exchange re-checks that the operator is still an administrator, so removing someone stops ' +
+      'their existing tokens working.',
     files: ['src/worker.ts', 'src/admission-mcp.ts', 'src/admission-oauth.ts', 'src/admission-agent.ts'],
     stack: ['OAuth 2.1', 'Model Context Protocol', 'Durable Objects'],
   },
@@ -82,11 +82,11 @@ const AUTHORED: Authored[] = [
     role: 'the instructor’s desk',
     group: 'front-door',
     whatItDoes:
-      'Where an instructor whose class was approved creates the link they hand to students, watches ' +
-      'the roster fill, and closes or replaces the link when the term moves on.',
+      'Where an instructor whose class was approved creates the link they hand to students. The ' +
+      'same page shows the roster filling up, and closes or replaces the link at the end of term.',
     howItsBuilt:
-      'A class link is a reusable secret rather than a per-student invitation, because a roster of ' +
-      'named invitations would mean collecting student emails the Lab has no reason to hold.',
+      'A class link is a reusable secret. Issuing one invitation per student would mean ' +
+      'collecting student email addresses, which the Lab has no reason to hold.',
     files: ['src/my-classes.ts', 'src/owner-ui.ts'],
     stack: ['Cloudflare Workers', 'QR generation'],
   },
@@ -97,12 +97,12 @@ const AUTHORED: Authored[] = [
     role: 'the shared rulebook',
     group: 'front-door',
     whatItDoes:
-      'The small shared library that keeps every service agreeing on who a person is. One way to ' +
-      'turn a CUNY login into a Lab pseudonym, one way to check a token.',
+      'The small shared library that keeps every service agreeing on who a person is. It has one ' +
+      'way to turn a CUNY login into a Lab pseudonym, and one way to check a token.',
     howItsBuilt:
-      'It exists so that no service can invent its own version of either. The derivation and the ' +
-      'token shape are published as [[frozen contracts]] — JSON files that pin the format, so a ' +
-      'change that would break another service fails a test rather than a login.',
+      'It exists so no service invents its own version of either. The derivation and the token ' +
+      'shape are published as JSON files that fix the format, so a change that would break ' +
+      'another service shows up as a failing test.',
     files: ['src/index.ts', 'contract/identity-jwt-claims-v1.json', 'contract/subject-derivation-v2.json'],
     stack: ['TypeScript', 'Web Crypto', 'published to GitHub Packages'],
   },
@@ -115,12 +115,12 @@ const AUTHORED: Authored[] = [
     role: 'the answer to "is this person allowed?"',
     group: 'access-desk',
     whatItDoes:
-      'Holds the Lab’s answer to whether a given person has access right now, and what they are ' +
-      'allowed to spend. Every other service asks this one rather than keeping its own list.',
+      'Holds the Lab\'s answer to whether a given person has access right now, and what they are ' +
+      'allowed to spend. Every other service asks this one. None of them keeps its own list.',
     howItsBuilt:
-      'It has no public address at all — it can only be reached by another Lab service over a ' +
-      'private binding. Because the answer is asked for fresh on every request, withdrawing ' +
-      'someone’s access takes effect immediately rather than when a token expires.',
+      'It has no public address. Another Lab service can reach it over a private binding, and ' +
+      'nothing else can. The answer is fetched fresh on every request, so withdrawing someone\'s ' +
+      'access takes effect immediately.',
     files: ['src/index.ts', 'src/intake-identity.ts', 'src/membership-policy.ts'],
     stack: ['Cloudflare Workers', 'named entrypoints', 'Turnstile'],
   },
@@ -128,15 +128,15 @@ const AUTHORED: Authored[] = [
     id: 'admission-ledger',
     code: 'LG',
     name: 'The ledger',
-    role: 'where membership actually lives',
+    role: 'where membership is stored',
     group: 'access-desk',
     whatItDoes:
-      'The record itself: applications, decisions, memberships and expiry dates, class rosters, and ' +
-      'the log of who changed what.',
+      'The record itself. Applications, decisions, memberships and expiry dates, class rosters, ' +
+      'and the log of who changed what.',
     howItsBuilt:
-      'All of it sits in a single [[durable object]] with its own SQLite database, addressed by one ' +
-      'fixed name. One writer means decisions cannot race each other, which matters when the same ' +
-      'application can be approved from a browser or an agent.',
+      'All of it sits in a single [[durable object]] with its own SQLite database, addressed by ' +
+      'one fixed name. One writer serializes decisions, so the same application cannot be ' +
+      'approved twice when a browser and an agent act at once.',
     files: ['src/registry.ts', 'src/registry-schema-v4.ts', 'src/schema.ts'],
     stack: ['Durable Objects', 'SQLite', 'versioned rows'],
   },
@@ -147,10 +147,10 @@ const AUTHORED: Authored[] = [
     role: 'the queue an administrator reads',
     group: 'access-desk',
     whatItDoes:
-      'The page where Lab staff see who has applied and approve or decline them, with a role, a ' +
-      'budget and an expiry date attached to each approval.',
+      'The page where Lab staff see who has applied and approve or decline them. Each approval ' +
+      'carries a role, a budget and an expiry date.',
     howItsBuilt:
-      'Server-rendered from the same worker that owns the data, so the queue on screen cannot drift ' +
+      'Server-rendered by the same worker that owns the data, so the queue on screen cannot drift ' +
       'from the queue in the ledger.',
     files: ['src/admin-ui.ts'],
     stack: ['server-rendered HTML'],
@@ -162,11 +162,11 @@ const AUTHORED: Authored[] = [
     role: 'the notifier',
     group: 'access-desk',
     whatItDoes:
-      'Writes and sends the messages people actually receive: your application arrived, your access ' +
-      'is approved, your class is ready.',
+      'Writes and sends the messages people receive, telling them their application arrived, ' +
+      'their access was approved, or their class is ready.',
     howItsBuilt:
-      'Messages are queued in the ledger and sent afterwards, so a mail outage delays the email ' +
-      'rather than failing the decision that caused it.',
+      'Messages are queued in the ledger and sent afterwards. A mail outage delays delivery, and ' +
+      'the decision itself still stands.',
     files: ['src/email.ts'],
     stack: ['Amazon SES', 'queued delivery'],
   },
@@ -179,12 +179,12 @@ const AUTHORED: Authored[] = [
     role: 'the one address for models',
     group: 'model-plane',
     whatItDoes:
-      'The Lab’s single API for talking to language models. Point any OpenAI-compatible tool at ' +
-      'it with a Lab key and it works — without you ever holding a vendor’s credential.',
+      'The Lab\'s single API for talking to language models. Point any OpenAI-compatible tool at ' +
+      'it with a Lab key and it works, without you ever holding a vendor\'s credential.',
     howItsBuilt:
-      'It is deliberately the one thing on the tools domain that does [[not]] pass through Doorway: ' +
-      'scripts and desktop apps need a plain bearer token, not a browser session, so it authenticates ' +
-      'callers itself.',
+      'It is the one thing on the tools domain that does [[not]] pass through Doorway. Scripts ' +
+      'and desktop apps carry a bearer token and have no browser session, so the endpoint ' +
+      'authenticates callers itself.',
     files: ['src/index.ts', 'src/catalog.ts', 'src/quota.ts'],
     stack: ['Cloudflare Workers', 'OpenAI-compatible API'],
   },
@@ -192,15 +192,16 @@ const AUTHORED: Authored[] = [
     id: 'gateway-auth',
     code: 'GA',
     name: 'Credential check',
-    role: 'the bouncer',
+    role: 'where a caller is authenticated',
     group: 'model-plane',
     whatItDoes:
-      'Works out who is calling — a person with a Lab key, a signed-in browser session, or the chat ' +
-      'sandbox on someone’s behalf — and whether they may spend anything.',
+      'Works out who is calling. That might be a person with a Lab key, a signed-in browser ' +
+      'session, or the chat sandbox acting on someone\'s behalf. It then decides whether the ' +
+      'caller may spend anything.',
     howItsBuilt:
-      'Permissions are never read from the token the caller presents. They are fetched from the key ' +
-      'vault every time, so a token cannot claim a budget it was not granted. Requests arriving with ' +
-      'forged identity headers are rejected outright.',
+      'Permissions are never read from the token the caller presents. They are fetched from the ' +
+      'key vault on every call, so a token cannot claim a budget it was not granted. A request ' +
+      'carrying forged identity headers is rejected outright.',
     files: ['src/auth.ts'],
     stack: ['RS256 verification', '@cuny-ai-lab/cail-identity'],
   },
@@ -211,12 +212,11 @@ const AUTHORED: Authored[] = [
     role: 'the dispatcher',
     group: 'model-plane',
     whatItDoes:
-      'Sends an admitted request on to whichever company actually runs the model, and translates ' +
-      'between their different dialects so the caller sees one consistent API.',
+      'Sends an admitted request on to whichever company runs the model, and translates between ' +
+      'their dialects so callers see one consistent API.',
     howItsBuilt:
-      'The vendor keys live in Cloudflare’s AI Gateway rather than in this code, so the Lab can ' +
-      'change providers without touching any tool that calls it — and a leak of this worker would ' +
-      'not leak the keys.',
+      'The vendor keys live in Cloudflare\'s AI Gateway. The Lab can change providers without ' +
+      'touching any tool that calls it, and a leak of this worker would not leak the keys.',
     files: ['src/upstream.ts', 'src/provider-adapters.ts'],
     stack: ['Workers AI', 'OpenRouter', 'Cloudflare AI Gateway'],
   },
@@ -231,8 +231,7 @@ const AUTHORED: Authored[] = [
       'endpoint, and sees a rough estimate of what they have spent.',
     howItsBuilt:
       'It holds no memberships and no permissions of its own. It asks the access desk who you are ' +
-      'and the vault for your keys, which keeps the question of "who may have a key" in exactly one ' +
-      'place.',
+      'and the vault for your keys, which keeps the question of who may have a key in one place.',
     files: ['model-access-api/src/index.ts', 'model-access-api/src/page.ts'],
     stack: ['Cloudflare Workers', 'server-rendered HTML'],
   },
@@ -243,12 +242,12 @@ const AUTHORED: Authored[] = [
     role: 'where credentials live',
     group: 'model-plane',
     whatItDoes:
-      'Stores the keys themselves and what each one is allowed to do, and links a chat-sandbox ' +
-      'account to the person behind it.',
+      'Stores the keys themselves and what each one is allowed to do. It also links a chat- ' +
+      'sandbox account to the person behind it.',
     howItsBuilt:
-      'Keys are kept as [[hashes]], so the vault can check one but cannot reproduce it — a key ' +
-      'shown once at creation is gone for good. It has no HTTP surface whatsoever: holding the ' +
-      'binding is the permission.',
+      'Keys are kept as [[hashes]]. The vault can check a key, and it cannot show one again after ' +
+      'the moment it is created. It has no HTTP surface at all, so the only way to call it is to ' +
+      'hold the binding.',
     files: ['model-access-registry/src/registry.ts', 'model-access-registry/src/entrypoints.ts'],
     stack: ['Durable Objects', 'SQLite', 'hashed credentials'],
   },
@@ -261,12 +260,12 @@ const AUTHORED: Authored[] = [
     role: 'the everyday chat tool',
     group: 'workshops',
     whatItDoes:
-      'The chat interface most people mean when they say they use the Lab: sign in with CUNY ' +
-      'Login, pick a model, talk to it, keep your conversations and documents.',
+      'The chat interface most people mean when they say they use the Lab. Sign in with CUNY ' +
+      'Login, pick a model, talk to it, and keep your conversations and documents.',
     howItsBuilt:
-      'It is [[Open WebUI]], an open-source project, run with a small set of the Lab’s own ' +
-      'patches rather than a fork — the patches re-apply to a pinned upstream commit and fail loudly ' +
-      'if upstream moves under them, which is what makes staying current affordable.',
+      'It is [[Open WebUI]], an open-source project, run with a small set of the Lab\'s own ' +
+      'patches instead of a fork. The patches re-apply to a pinned upstream commit, and they fail ' +
+      'with an error if upstream has changed underneath them.',
     files: ['image/patches/cail-oauth-activation.py', 'src/openwebui/cail_model_access.py'],
     stack: ['Open WebUI', 'AWS Fargate', 'PostgreSQL'],
   },
@@ -277,12 +276,12 @@ const AUTHORED: Authored[] = [
     role: 'how the chat tool gets updated',
     group: 'workshops',
     whatItDoes:
-      'Builds the chat sandbox’s image and rolls it out — to a test environment first, then to ' +
+      'Builds the chat sandbox\'s image and rolls it out, to a test environment first and then to ' +
       'the one people use.',
     howItsBuilt:
-      'Deploys move an exact image [[digest]] rather than a tag, so what was tested is provably what ' +
-      'ships. A set of policy-managed settings is re-applied on every rollout, so a hand-edit made ' +
-      'during an incident cannot quietly survive into the next release.',
+      'Deploys move an exact image [[digest]], so the tested image and the running image are the ' +
+      'same build. A set of policy-managed settings is re-applied on every rollout, so a hand- ' +
+      'edit made during an incident does not survive into the next release.',
     files: ['scripts/rollout-ecs.sh', 'src/policy.ts', 'policy.json'],
     stack: ['GitHub Actions', 'Amazon ECS', 'pinned digests'],
   },
@@ -293,13 +292,13 @@ const AUTHORED: Authored[] = [
     role: 'the research workspace',
     group: 'workshops',
     whatItDoes:
-      'A workspace where you describe a research task in chat and an agent writes and runs code to ' +
-      'do it — searching library catalogs and article databases, pulling the results together, and ' +
-      'building tables and charts you can keep.',
+      'A workspace where you describe a research task in chat and an agent writes and runs code ' +
+      'to do it. It searches library catalogs and article databases, then builds the tables and ' +
+      'charts you keep.',
     howItsBuilt:
-      'The code the agent writes runs in a [[disposable worker]] with no network access of its own; ' +
-      'every outbound request has to go through an allowlist. Database credentials are attached ' +
-      'outside that sandbox, so the model never sees them.',
+      'The code the agent writes runs in a [[disposable worker]] with no network access of its ' +
+      'own, and every outbound request goes through an allowlist. Database credentials are ' +
+      'attached outside that sandbox, so the model never sees them.',
     files: [
       'cloudflare/src/agent/workspace-agent.ts',
       'cloudflare/src/server.ts',
@@ -314,11 +313,10 @@ const AUTHORED: Authored[] = [
     role: 'what the researcher sees',
     group: 'workshops',
     whatItDoes:
-      'The workspace itself: a canvas of panels — tables, charts, documents, file previews — that ' +
-      'you can rearrange and connect as the agent produces them.',
+      'The workspace itself. Tables, charts, documents and file previews arrive as panels on a ' +
+      'canvas you can rearrange and connect.',
     howItsBuilt:
-      'Results arrive as panels on a canvas rather than as a wall of chat, because research output ' +
-      'is something you come back to and rearrange, not a transcript you scroll.',
+      'Results land as panels because you come back to research output and rearrange it.',
     files: ['frontend/src/App.tsx', 'frontend/src/components/canvas/CanvasFlow.tsx'],
     stack: ['React', 'React Flow', 'Tailwind'],
   },
@@ -329,13 +327,12 @@ const AUTHORED: Authored[] = [
     role: 'the website builder',
     group: 'workshops',
     whatItDoes:
-      'Builds academic websites — a CV, a course page, a portfolio — by conversation: you describe ' +
-      'a change and it edits the real HTML and CSS, then publishes to a public address when you are ' +
-      'ready.',
+      'Builds academic websites by conversation. You describe a change, it edits the real HTML ' +
+      'and CSS, and it publishes to a public address when you are ready. The templates cover a ' +
+      'CV, a course page and a portfolio, among others.',
     howItsBuilt:
-      'Unlike the other tools it reaches the model endpoint over its [[public address]] rather than ' +
-      'a private binding, which is a real difference in how it is wired and worth knowing when ' +
-      'tracing a problem. Every generated image is screened by a vision model before it can be saved.',
+      'It reaches the model endpoint at its [[public address]], while the other tools use private ' +
+      'bindings. Every generated image is screened by a vision model before it can be saved.',
     files: [
       'packages/app/src/agents/site-builder.ts',
       'packages/app/src/routes/publish.ts',
@@ -350,11 +347,10 @@ const AUTHORED: Authored[] = [
     role: 'the split-screen editor',
     group: 'workshops',
     whatItDoes:
-      'Chat on one side, the site on the other, with the exact changes highlighted before you accept ' +
-      'them.',
+      'Chat sits beside a live view of the site, and every change is highlighted before you ' +
+      'accept it.',
     howItsBuilt:
-      'Edits are shown as a diff rather than applied silently, because the person is meant to stay ' +
-      'the author of their own website.',
+      'Edits are shown as a diff before they are applied.',
     files: [
       'packages/frontend/src/lib/components/AgentChat.svelte',
       'packages/frontend/src/routes/editor/[projectId]/+page.svelte',
@@ -371,9 +367,9 @@ const AUTHORED: Authored[] = [
       'Hands a signed-in person a short-lived Linux container to run commands in, with a daily ' +
       'budget so one person cannot exhaust the shared capacity.',
     howItsBuilt:
-      'Nothing on this map calls it. Its caller is the Workbench, which is not drawn here — and ' +
-      'notably the two studios do not use it: they run untrusted code in disposable workers instead. ' +
-      'That is the kind of edge a hand-drawn diagram usually invents.',
+      'Nothing on this map calls it. Its caller is the Workbench, which is not drawn here. The ' +
+      'two studios run untrusted code in disposable workers, so there is no call between a studio ' +
+      'and this service.',
     files: ['src/subject-policy.ts', 'src/http.ts', 'src/cloudflare-sandbox.ts'],
     stack: ['Cloudflare Containers', 'Durable Objects', 'leases and quotas'],
   },
@@ -386,9 +382,9 @@ const AUTHORED: Authored[] = [
     role: 'the university’s sign-in',
     group: 'outside',
     whatItDoes:
-      'The university’s own single sign-on. The Lab never sees or stores your CUNY password.',
+      'The university\'s own single sign-on. The Lab never sees or stores your CUNY password.',
     howItsBuilt:
-      'Run by CUNY, not the Lab. Both the front door and the chat sandbox authenticate against it ' +
+      'Run by CUNY. Both the front door and the chat sandbox authenticate against it ' +
       'independently.',
     files: [],
     stack: ['CUNY Central IT'],
@@ -400,11 +396,10 @@ const AUTHORED: Authored[] = [
     role: 'the open-weight models',
     group: 'outside',
     whatItDoes:
-      'Cloudflare’s model hosting, which serves most of the open-weight models the Lab offers.',
+      'Cloudflare\'s model hosting, which serves most of the open-weight models the Lab offers.',
     howItsBuilt:
-      'Open-weight models matter to the Lab beyond price: a model whose weights are published can be ' +
-      'moved to another host, which is what keeps a teaching commitment from depending on one ' +
-      'company’s pricing.',
+      'A model whose weights are published can be moved to another host, so the Lab\'s teaching ' +
+      'commitments do not depend on one company\'s pricing.',
     files: [],
     stack: ['Cloudflare'],
   },
@@ -412,13 +407,13 @@ const AUTHORED: Authored[] = [
     id: 'openrouter',
     code: 'OR',
     name: 'OpenRouter',
-    role: 'everything else',
+    role: 'the commercial models',
     group: 'outside',
     whatItDoes:
-      'A broker that reaches the commercial models — the frontier ones from Anthropic, OpenAI and ' +
-      'others — that the Lab cannot host itself.',
+      'A broker that reaches the commercial models the Lab cannot host itself, including the ' +
+      'frontier models from Anthropic and OpenAI.',
     howItsBuilt:
-      'Reached through Cloudflare’s AI Gateway, which is where the credential and the spending ' +
+      'Reached through Cloudflare\'s AI Gateway, which is where the credential and the spending ' +
       'record live.',
     files: [],
     stack: ['OpenRouter'],
@@ -427,10 +422,10 @@ const AUTHORED: Authored[] = [
     id: 'amazon-ses',
     code: 'MX',
     name: 'Email delivery',
-    role: 'the postbox',
+    role: 'the mail sender',
     group: 'outside',
-    whatItDoes: 'Sends the Lab’s decision emails.',
-    howItsBuilt: 'Amazon SES, sending as ailab@gc.cuny.edu.',
+    whatItDoes: 'Sends the Lab’s decision emails, as ailab@gc.cuny.edu.',
+    howItsBuilt: 'Amazon SES, in the same AWS account that runs the chat sandbox.',
     files: [],
     stack: ['Amazon SES'],
   },
@@ -752,8 +747,8 @@ export const FLOWS: ArchFlow[] = [
     name: 'Sign in',
     payload: 'your CUNY identity',
     summary:
-      'One sign-in with CUNY Login becomes a Lab pseudonym, a membership check, and a short-lived ' +
-      'token for the tool you asked for.',
+      'Signing in with CUNY Login produces a Lab pseudonym. The front door then checks the ' +
+      'membership and mints a token for the one tool you asked for.',
     route: [
       'e-signin-cuny',
       'e-signin-subject',
@@ -767,8 +762,8 @@ export const FLOWS: ArchFlow[] = [
     name: 'Ask a model a question',
     payload: 'a prompt',
     summary:
-      'A question typed in the chat sandbox reaches a model — and is checked against a live ' +
-      'membership on the way, not against a claim in a token.',
+      'A question typed in the chat sandbox reaches a model. On the way, the gateway checks the ' +
+      'person\'s membership, which it reads from the vault on every call.',
     route: [
       'e-chat-gateway',
       'e-gateway-auth',
@@ -783,8 +778,8 @@ export const FLOWS: ArchFlow[] = [
     name: 'Apply for access',
     payload: 'an application',
     summary:
-      'An application from the Lab’s website becomes a row a human reviews, and a decision that ' +
-      'emails itself.',
+      'Someone applies on the Lab\'s website. The desk records the application, a person reviews ' +
+      'it, and the Lab emails the decision.',
     route: ['e-doorway-admission', 'e-desk-ledger', 'e-ledger-email', 'e-email-ses'],
   },
   {
@@ -792,8 +787,8 @@ export const FLOWS: ArchFlow[] = [
     name: 'Get a key for your own code',
     payload: 'a personal key',
     summary:
-      'A researcher who wants to call models from their own scripts collects a key that is stored ' +
-      'only as a hash.',
+      'A researcher who wants to call models from their own scripts collects a key. The vault ' +
+      'stores it as a hash.',
     route: ['e-doorway-keys', 'e-keys-admission', 'e-keys-registry', 'e-keys-quota'],
   },
   {
@@ -801,8 +796,9 @@ export const FLOWS: ArchFlow[] = [
     name: 'Build a website',
     payload: 'an edit request',
     summary:
-      'A described change in Site Studio becomes a model call and an edit to real HTML — over the ' +
-      'public address rather than a private binding, unlike its siblings.',
+      'You describe a change, and Site Studio turns it into a model call and an edit to real ' +
+      'HTML. It calls the model endpoint at its public address; the other tools use private ' +
+      'bindings.',
     route: ['e-doorway-sitestudio', 'e-sitestudio-gateway', 'e-gateway-upstream', 'e-upstream-workersai'],
   },
 ]
@@ -847,17 +843,17 @@ export const ARCHITECTURE: ArchitectureData = {
   flows: FLOWS,
   intro: {
     title: 'The CUNY AI Lab',
-    lede: 'Nine repositories, mapped as one system.',
+    lede: 'The nine repositories that make up the Lab\'s software',
     whatItDoes:
-      'The Lab runs shared AI tools for CUNY: a chat sandbox, a research workspace, a website ' +
-      'builder, and one model endpoint underneath them all. The point of the arrangement is that a ' +
-      'person signs in once with their CUNY account, and no tool ever holds a vendor credential or ' +
-      'learns who they are.',
+      'The Lab runs shared AI tools for CUNY. There is a chat sandbox, a research workspace and ' +
+      'a website builder, with one model endpoint underneath all three. A person signs in once ' +
+      'with their CUNY account. No tool holds a vendor credential, and none of them learns who ' +
+      'that person is.',
     howItsBuilt:
-      'Almost everything runs at the edge on Cloudflare Workers, reached through private bindings ' +
-      'rather than public addresses, with one front door that talks to CUNY Login and one access ' +
-      'desk that answers whether a person is allowed. The chat sandbox is the exception on both ' +
-      'counts: it runs on AWS and signs people in itself.',
+      'Almost everything runs on Cloudflare Workers. Services reach each other over private ' +
+      'bindings, so none of them answers on a public address. One front door handles CUNY Login ' +
+      'and one access desk answers whether a person is allowed. The chat sandbox is different on ' +
+      'both counts. It runs on AWS and signs people in itself.',
   },
   unmapped: UNCLAIMED,
   repo: 'CUNY-AI-Lab',

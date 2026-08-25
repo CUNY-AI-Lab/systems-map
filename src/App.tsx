@@ -94,8 +94,8 @@ export default function App() {
             }}
           >
             The Lab runs a handful of services that let people at CUNY sign in once and use AI
-            tools without handing their work to a vendor. This is a map of those services: what
-            each one does, and the route a request actually takes through them.
+            tools without handing their work to a vendor. This map shows what each service does,
+            and the route a request actually takes through them.
           </p>
         </div>
       </header>
@@ -131,28 +131,27 @@ export default function App() {
           {wideEnough ? (
             <>
               <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-                Every building is one real piece of software, and its size is measured, not
-                decorative: taller and wider means more code doing more work. The lines between
-                buildings are the calls those services genuinely make to each other.
+                Every building is one real piece of software. Its size is measured from the code,
+                so taller and wider means more code doing more work. The lines between buildings
+                are the calls those services genuinely make to each other.
               </p>
               <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-                Start by pressing one of the journeys in the left-hand list. A dot travels the
-                route a real request takes — signing in, asking a model a question, applying for
-                access — stopping at each service along the way with a note on what happens there.
-                Click any building for a plain description first, then the technical detail
-                underneath.
+                Start by pressing one of the journeys in the left-hand list. A dot then travels
+                the route a real request takes, stopping at each service along the way with a note
+                on what happens there. Click any building for a plain description first, with the
+                technical detail underneath.
               </p>
             </>
           ) : (
             <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
               Every building is one real service, sized by how much code it holds. Pick a journey
-              to watch a request travel it, tap a building to read about it, and drag to move the
-              map. Everything it shows is also written out underneath.
+              to watch a request travel it, or tap a building to read about it. Drag to move the
+              map. Everything it shows is written out underneath as well.
             </p>
           )}
           <p style={{ maxWidth: '65ch', margin: 0, color: '#565247' }}>
-            Nothing here is drawn from imagination. If a step is listed, there is a line of code
-            that makes that call.
+            Nothing here is drawn from imagination. If a step is listed, some line of code makes
+            that call.
           </p>
         </section>
 

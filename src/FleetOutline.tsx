@@ -63,7 +63,7 @@ export default function FleetOutline({ data }: { data: ArchitectureData }) {
         Journeys
       </h2>
       <p style={{ margin: '0 0 1.8rem', color: '#565247' }}>
-        The routes a real request travels. Every step is a call that exists in the code.
+        The routes a real request travels. Every step below is a call that exists in the code.
       </p>
 
       {data.flows.map((flow) => (
