@@ -1,6 +1,8 @@
 import ArchitectureMap from './architecture/components/ArchitectureMap'
 import { ARCHITECTURE } from './architecture/graph'
 import { TOTALS } from './architecture/measured.generated'
+import FleetOutline from './FleetOutline'
+import { useWideEnough } from './useWideEnough'
 
 /**
  * The page around the map.
@@ -47,10 +49,12 @@ function Stat({ value, label }: { value: string; label: string }) {
 }
 
 export default function App() {
+  const wideEnough = useWideEnough()
+
   return (
     <>
       <a className="skip-link" href="#map">
-        Skip to the map
+        Skip to {wideEnough ? 'the map' : 'the outline'}
       </a>
 
       <header style={{ background: 'var(--navy)', color: '#fff', padding: '4rem 0 3.5rem' }}>
@@ -123,25 +127,36 @@ export default function App() {
           >
             How to read it
           </h2>
-          <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-            Every building is one real piece of software, and its size is measured, not
-            decorative: taller and wider means more code doing more work. The lines between
-            buildings are the calls those services genuinely make to each other.
-          </p>
-          <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-            Start by pressing one of the journeys in the left-hand list. A dot travels the route
-            a real request takes — signing in, asking a model a question, applying for access —
-            stopping at each service along the way with a note on what happens there. Click any
-            building for a plain description first, then the technical detail underneath.
-          </p>
+          {wideEnough ? (
+            <>
+              <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
+                Every building is one real piece of software, and its size is measured, not
+                decorative: taller and wider means more code doing more work. The lines between
+                buildings are the calls those services genuinely make to each other.
+              </p>
+              <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
+                Start by pressing one of the journeys in the left-hand list. A dot travels the
+                route a real request takes — signing in, asking a model a question, applying for
+                access — stopping at each service along the way with a note on what happens there.
+                Click any building for a plain description first, then the technical detail
+                underneath.
+              </p>
+            </>
+          ) : (
+            <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
+              Below are the journeys a real request travels — signing in, asking a model a
+              question, applying for access — and then every service, with a plain description
+              first and the technical detail underneath.
+            </p>
+          )}
           <p style={{ maxWidth: '65ch', margin: 0, color: '#565247' }}>
-            Nothing here is drawn from imagination. If a line is on the map, there is a line of
-            code that makes that call, and the file is listed in the panel.
+            Nothing here is drawn from imagination. If a step is listed, there is a line of code
+            that makes that call.
           </p>
         </section>
 
         <section id="map" style={{ borderTop: '1px solid var(--rule)' }}>
-          <ArchitectureMap data={ARCHITECTURE} />
+          {wideEnough ? <ArchitectureMap data={ARCHITECTURE} /> : <FleetOutline data={ARCHITECTURE} />}
         </section>
       </main>
 
