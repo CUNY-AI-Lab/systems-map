@@ -8,13 +8,27 @@ skill, adapted from its single-repository design to span nine.
 
 ## The rule this map keeps
 
-**Prose, groups and flows are authored. Counts, geometry and heights are
-measured.**
+**Prose, groups and flows are authored. Every number is derived.**
 
 No scanner can say what a subsystem is *for*, and nobody can keep file counts
-honest by hand. Every building's size and shape comes from
-`scripts/fleet-measure.mjs` reading the repositories; every sentence about what
-a service does was written by reading its code.
+honest by hand. Every sentence about what a service does was written by reading
+its code; every number under the drawing comes from
+`scripts/fleet-measure.mjs` reading the repositories.
+
+What each dimension carries is a choice, and it is not the skill's default:
+
+| Dimension | Means |
+|---|---|
+| Footprint | Lines of code, on a log ladder |
+| Height | How many journeys and calls run through the node |
+| Outline instead of solid | Outside the Lab, so nothing of ours to measure |
+
+Sizing height by lines made the website builder the tallest thing on the map
+and left the authentication boundary every model call crosses — 511 lines in
+one file — among the shortest. Sizing floor area by *file* count let language
+convention drive the composition, since a React frontend splits into fifty
+small files and a Worker into five large ones. The reasoning is in the note
+above `centrality` in `graph.ts`.
 
 The second half of the rule carries more weight: **add no edge that cannot be
 traced to a call in the code.** A plausible arrow is worse than a missing one,

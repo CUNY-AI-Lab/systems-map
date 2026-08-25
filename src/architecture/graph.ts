@@ -1,16 +1,17 @@
 import type { ArchitectureData } from './components/ArchitectureMap'
-import { deriveArchetype, deriveHeight, deriveSize, packLayout, type Measure } from './core/layout'
+import { deriveArchetype, packLayout, type Measure } from './core/layout'
 import type { ArchEdge, ArchFlow, ArchNode, Group } from './core/types'
 import { MEASURED, UNCLAIMED } from './measured.generated'
 
 /**
  * What the fleet is, written by hand.
  *
- * Prose, groups and flows are authored; counts, geometry and heights are
- * measured. Nothing below sets a building's height: that comes from
- * scripts/fleet-measure.mjs reading the repositories. Add no edge that cannot
- * be traced to a call in the code, including when the missing connection is
- * one people expect to find.
+ * Prose, groups and flows are authored; every number is derived. File counts
+ * and lines come from scripts/fleet-measure.mjs reading the repositories, and
+ * footprints and heights are computed from those and from the graph below —
+ * see the note above `centrality`. Add no edge that cannot be traced to a call
+ * in the code, including when the missing connection is one people expect to
+ * find.
  */
 
 export const GROUPS: Group[] = [
@@ -798,15 +799,63 @@ export const FLOWS: ArchFlow[] = [
 
 const NO_MEASURE: Measure = { count: 0, loc: 0 }
 
+/**
+ * What the drawing claims, and why it is not the skill's default.
+ *
+ * The skill sizes and heights a building from its lines of code. On one
+ * repository that reads well. Across nine it made three false claims, so both
+ * are derived differently here:
+ *
+ * `height` is centrality, not bulk. Everyone reads a tall building as an
+ * important one, and by lines of code the tallest thing on the map was the
+ * website builder while the authentication boundary every model call crosses
+ * — 511 lines in one file — was among the shortest. Height now counts the
+ * journeys that pass through a node and the calls that touch it, so the
+ * request path is the skyline. It is still derived: both numbers come from
+ * the edges and flows below, not from a judgement typed into a field.
+ *
+ * `footprint` is bulk, from lines rather than files. Sizing floor area by
+ * file count let convention drive the composition: a React frontend splits
+ * into fifty small files and a Worker into five large ones, so the studios
+ * claimed nearly three times the ground of comparable services for reasons no
+ * reader could see.
+ *
+ * Nothing outside the Lab is measured at all, so those four keep a fixed
+ * plate and are drawn as outlines — see `theme.css`. Rendering CUNY Login as
+ * the flattest thing on the map, because the Lab does not own its source, was
+ * the most misleading part of the first version.
+ */
+function centrality(id: string): number {
+  const journeys = FLOWS.filter((flow) =>
+    flow.route.some((edgeId) => {
+      const edge = EDGES.find((candidate) => candidate.id === edgeId)
+      return edge !== undefined && (edge.from === id || edge.to === id)
+    }),
+  ).length
+  const calls = EDGES.filter((edge) => edge.from === id || edge.to === id).length
+  return journeys * 0.9 + calls * 0.25
+}
+
+/** Floor area from volume of code, on a log ladder: 2, 3 or 4 cells a side. */
+function bulkSide(measure: Measure): number {
+  if (measure.loc <= 0) return 3
+  return Math.max(2, Math.min(4, Math.round(Math.log2(measure.loc / 400 + 1))))
+}
+
 const sized = AUTHORED.map((node) => {
   const measure = MEASURED[node.id] ?? NO_MEASURE
   const { archetype, params } = deriveArchetype(measure)
+  const side = bulkSide(measure)
   return {
     node,
     measure,
     archetype,
-    params,
-    size: deriveSize(archetype, params, measure),
+    // A comb of fins should stay countable at the width the bulk allows.
+    params:
+      archetype === 'fin-row'
+        ? { ...params, count: Math.max(2, Math.min(params?.count ?? 3, side * 2)) }
+        : params,
+    size: measure.loc <= 0 ? { w: 3, d: 2 } : { w: side, d: side },
   }
 })
 
@@ -823,7 +872,7 @@ export const NODES: ArchNode[] = sized.map(({ node, measure, archetype, params }
     archetype,
     params,
     footprint,
-    height: deriveHeight(measure),
+    height: Math.max(1, Math.min(6, 1 + Math.round(centrality(node.id)))),
     count: measure.count,
     loc: measure.loc,
   }

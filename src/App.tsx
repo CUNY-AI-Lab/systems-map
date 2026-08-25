@@ -130,8 +130,11 @@ export default function App() {
           {wideEnough ? (
             <>
               <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-                Each building is one service, and bigger buildings hold more code. The lines
-                between them are the calls they make to each other.
+                Each building is one service. Its footprint is how much code it holds, and its
+                height is how many of the journeys below run through it, so the tall buildings are
+                the ones almost everything depends on. The lines between them are the calls they
+                make to each other. Outlined shapes sit outside the Lab, where there is no code of
+                ours to measure.
               </p>
               <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
                 Start with a journey from the left-hand list. A dot follows the route a request
@@ -141,9 +144,10 @@ export default function App() {
             </>
           ) : (
             <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-              Each building is one service, and bigger buildings hold more code. Pick a journey
-              to watch a request travel it, or tap a building to read about it. Drag to move the
-              map, and pinch to zoom.
+              Each building is one service: wider means more code, taller means more journeys run
+              through it. Outlined shapes sit outside the Lab. Pick a journey to watch a request
+              travel it, or tap a building to read about it. Drag to move the map, and pinch to
+              zoom.
             </p>
           )}
         </section>
