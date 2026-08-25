@@ -2,6 +2,7 @@ import ArchitectureMap from './architecture/components/ArchitectureMap'
 import { ARCHITECTURE } from './architecture/graph'
 import { TOTALS } from './architecture/measured.generated'
 import FleetOutline from './FleetOutline'
+import MobileMap from './MobileMap'
 import { useWideEnough } from './useWideEnough'
 
 /**
@@ -144,9 +145,9 @@ export default function App() {
             </>
           ) : (
             <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-              Below are the journeys a real request travels — signing in, asking a model a
-              question, applying for access — and then every service, with a plain description
-              first and the technical detail underneath.
+              Every building is one real service, sized by how much code it holds. Pick a journey
+              to watch a request travel it, tap a building to read about it, and drag to move the
+              map. Everything it shows is also written out underneath.
             </p>
           )}
           <p style={{ maxWidth: '65ch', margin: 0, color: '#565247' }}>
@@ -156,7 +157,14 @@ export default function App() {
         </section>
 
         <section id="map" style={{ borderTop: '1px solid var(--rule)' }}>
-          {wideEnough ? <ArchitectureMap data={ARCHITECTURE} /> : <FleetOutline data={ARCHITECTURE} />}
+          {wideEnough ? (
+            <ArchitectureMap data={ARCHITECTURE} />
+          ) : (
+            <>
+              <MobileMap data={ARCHITECTURE} />
+              <FleetOutline data={ARCHITECTURE} />
+            </>
+          )}
         </section>
       </main>
 

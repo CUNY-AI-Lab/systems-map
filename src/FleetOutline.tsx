@@ -52,21 +52,6 @@ export default function FleetOutline({ data }: { data: ArchitectureData }) {
 
   return (
     <div style={{ width: 'min(880px, calc(100% - 2.5rem))', margin: '0 auto', padding: '2.5rem 0 4rem' }}>
-      <p
-        style={{
-          border: '1px solid var(--rule)',
-          borderLeft: '4px solid var(--navy)',
-          padding: '0.9rem 1rem',
-          margin: '0 0 2.5rem',
-          fontSize: '0.95rem',
-          color: '#565247',
-        }}
-      >
-        The interactive map needs a wider screen — it is a pan-and-zoom city, and a phone cannot
-        hold it. Everything it shows is written out below. Open this page on a laptop for the map
-        itself.
-      </p>
-
       <h2
         style={{
           fontFamily: 'Outfit, sans-serif',
