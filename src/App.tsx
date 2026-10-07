@@ -131,8 +131,8 @@ export default function App() {
           <div className="page-head__grid">
             <h1>Systems map</h1>
             <p className="page-head__lede">
-              You sign in once with your CUNY account and can use any of the Lab’s tools. We run one
-              gateway to language models for all of them, and keep one list of members.
+              You sign in with your CUNY account to use any of the Lab’s tools. We send all of their
+              model requests through our gateway and check your access against our member list.
             </p>
           </div>
         </div>
@@ -189,9 +189,6 @@ export default function App() {
             </span>
             <span>
               <i className="k-outside" /> Run by someone else
-            </span>
-            <span>
-              <i className="k-check" /> Access check
             </span>
           </div>
           <Poster

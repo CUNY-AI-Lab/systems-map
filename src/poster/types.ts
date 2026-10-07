@@ -9,7 +9,7 @@
 
 export type Kind = 'outside' | 'backbone' | 'tool'
 
-export type Category = 'chat' | 'studio' | 'media' | 'api' | 'writing'
+export type Category = 'chat' | 'studio' | 'media' | 'api'
 
 export interface Part {
   name: string
@@ -30,8 +30,6 @@ export interface Block {
   inside?: Part[]
   /** The live address, for tools people can open. */
   href?: string
-  /** Shown on the poster under the name, e.g. a path. */
-  address?: string
   /** For outside blocks: who runs it. */
   runBy?: string
   category?: Category

@@ -25,11 +25,11 @@ A bar must cover a contiguous run of columns. If a change to the wiring breaks
 that, the page throws at load, and the fix is to reorder `TOOL_ORDER`.
 
 The wiring follows the code, with two simplifications: PDF Accessibility is
-drawn on the gateway, where it is moving, and the Sandbox's older direct
-provider settings are left out.
+drawn behind the front door and on the gateway, where it is moving, and the
+Sandbox's older direct provider settings are left out.
 
-Write the copy with people as the subjects (you, Lab staff, instructors, the
-Lab), and run it through prose-lint before publishing.
+Write the copy with people as the subjects (you, we, our staff, instructors),
+and run it through prose-lint before publishing.
 
 ## Working on it
 

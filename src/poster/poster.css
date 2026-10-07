@@ -1,10 +1,10 @@
 /**
  * The overview's look.
  *
- * Four kinds of mark, each with one meaning: navy is the Lab's shared
- * services, white cards are tools people open, a dashed outline is a service
- * someone else runs, and gold is an access check. Colour on the tool cards
- * follows the categories on the Lab's own Tools page.
+ * Three kinds of box: navy is the Lab's shared services, white cards are
+ * tools people open, and a dashed outline is a service someone else runs.
+ * Gold marks journey steps and selection. Colour on the tool cards follows
+ * the categories on the Lab's own Tools page.
  */
 
 :root {
@@ -12,7 +12,6 @@
   --navy-deep: #162d66;
   --azure: #2a6fb8;
   --gold: #ffb81c;
-  --gold-ink: #8a5a00;
   --paper: #fffdf8;
   --pearl: #f4f0e6;
   --ink-2: #565247;
@@ -23,7 +22,6 @@
   --cat-api: #2a6fb8;
   --cat-studio: #5b4fd6;
   --cat-media: #0e9bb5;
-  --cat-writing: #2f9a52;
 
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
@@ -234,12 +232,6 @@
   border: 1.5px dashed var(--ink-3);
 }
 
-.legend .k-check {
-  height: 0;
-  border-radius: 0;
-  border-top: 2px dotted var(--gold-ink);
-}
-
 .poster {
   --gap: 0.7rem;
   --conduit: 1.7rem;
@@ -249,10 +241,8 @@
 @media (min-width: 64rem) {
   .poster {
     display: grid;
-    grid-template-columns: 6.25rem repeat(var(--tools), minmax(0, 1fr)) minmax(10.5rem, 13.5rem);
-    grid-template-rows:
-      auto auto var(--conduit) auto var(--conduit) auto var(--conduit) auto var(--conduit)
-      auto;
+    grid-template-columns: 6.25rem repeat(var(--tools), minmax(0, 1fr));
+    grid-template-rows: auto var(--conduit) auto var(--conduit) auto var(--conduit) auto var(--conduit) auto;
     column-gap: var(--gap);
   }
 
@@ -303,25 +293,6 @@
   line-height: 1.35;
   text-transform: uppercase;
   color: var(--ink-2);
-}
-
-.you {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 0 0 0.75rem;
-  font-size: 0.86rem;
-  color: var(--ink-2);
-  transition: opacity 200ms var(--ease);
-}
-
-.you__mark {
-  flex: none;
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 50%;
-  background: var(--navy);
-  box-shadow: 0 0 0 3px rgba(29, 58, 131, 0.15);
 }
 
 /* ------------------------------------------------------------ blocks */
@@ -386,15 +357,6 @@
   color: var(--ink-3);
 }
 
-.blk__address {
-  margin-top: auto;
-  padding-top: 0.35rem;
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.66rem;
-  color: var(--ink-3);
-  overflow-wrap: anywhere;
-}
-
 /* tools */
 .blk--tool {
   border-top: 4px solid var(--cat, var(--cat-chat));
@@ -411,9 +373,6 @@
 }
 .cat--media {
   --cat: var(--cat-media);
-}
-.cat--writing {
-  --cat: var(--cat-writing);
 }
 
 /* the Lab's shared services */
@@ -458,56 +417,6 @@
 
 .blk--outside.bar {
   padding: 0.55rem 1rem;
-}
-
-/* The bar beside the desk reaches across the gap to it. */
-.bar.reaches-desk::after {
-  content: '';
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  width: calc(var(--gap) + 1px);
-  border-top: 2px dotted var(--gold-ink);
-}
-
-.bar.reaches-desk.desk-lit::after {
-  border-top: 3px solid var(--gold);
-}
-
-.desk {
-  border-top: 4px solid var(--gold);
-  justify-content: flex-start;
-  gap: 0.35rem;
-}
-
-.desk .blk__name {
-  font-size: 1.12rem;
-}
-
-.desk__asks {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  margin-top: 0.6rem;
-  font-size: 0.74rem;
-  line-height: 1.35;
-  color: rgba(255, 255, 255, 0.78);
-}
-
-.desk__asks span {
-  position: relative;
-  padding-left: 0.95rem;
-}
-
-.desk__asks span::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.42em;
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: 50%;
-  background: var(--gold);
 }
 
 /* journey step numbers */
@@ -599,39 +508,6 @@
   border-top-color: var(--azure);
 }
 
-.leader {
-  position: relative;
-  align-self: center;
-  height: 1.6rem;
-  transition: opacity 220ms var(--ease);
-}
-
-.leader::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: calc(-1 * var(--gap) - 1px);
-  top: 50%;
-  border-top: 2px dotted var(--gold-ink);
-}
-
-.leader__label {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 55%;
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.62rem;
-  letter-spacing: 0.04em;
-  text-align: center;
-  color: var(--gold-ink);
-  white-space: nowrap;
-}
-
-.leader.is-lit::before {
-  border-top: 3px solid var(--gold);
-}
-
 @keyframes flow-down {
   to {
     background-position: 0 11px;
@@ -644,14 +520,8 @@
   opacity: 0.26;
 }
 
-.has-journey .line:not(.is-lit),
-.has-journey .leader:not(.is-lit),
-.has-journey .bar.reaches-desk:not(.desk-lit)::after {
+.has-journey .line:not(.is-lit) {
   opacity: 0.2;
-}
-
-.has-journey .you {
-  opacity: 0.35;
 }
 
 /* --------------------------------------------------- narrow screens */
@@ -667,9 +537,7 @@
     gap: 0.6rem;
   }
 
-  .line,
-  .leader,
-  .bar.reaches-desk::after {
+  .line {
     display: none;
   }
 
@@ -681,12 +549,6 @@
     border-right: 0;
     margin: 0.9rem 0 0;
     padding: 0;
-  }
-
-  /* On a phone the list reads top to bottom, so the most-used tools lead. */
-  .tools [data-block='ai-disclosure'],
-  .tools [data-block='pdf-accessibility'] {
-    order: 1;
   }
 
   .tools,
@@ -876,49 +738,4 @@
 
 .below p {
   margin: 0;
-}
-
-/* --------------------------------------------- tools with no sign-in */
-
-.open-note {
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 0.7rem;
-  border: 1.5px dashed var(--wire);
-  border-radius: 10px;
-  background: repeating-linear-gradient(
-    -45deg,
-    transparent 0 7px,
-    rgba(185, 176, 160, 0.12) 7px 8px
-  );
-  font-size: 0.78rem;
-  font-weight: 500;
-  text-align: center;
-  color: var(--ink-3);
-  transition: opacity 220ms var(--ease);
-}
-
-.has-journey .open-note {
-  opacity: 0.35;
-}
-
-/* The desk's second note sits level with the gateway, where that check happens. */
-.desk__asks {
-  flex: 1;
-}
-
-.desk__low {
-  margin-top: auto;
-}
-
-@media (max-width: 63.99rem) {
-  .open-note {
-    display: none;
-  }
-
-  .desk__low {
-    margin-top: 0;
-  }
 }
