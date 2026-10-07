@@ -1,52 +1,35 @@
 # Systems map
 
-A map of the CUNY AI Lab's systems, built to be shown to colleagues: what each
-service does, and how a request travels between them.
+A one-screen map of the CUNY AI Lab's tools and the shared services under
+them, built to be handed to colleagues by link.
 
-Built with the [architecture-map](https://github.com/almendili/skills/tree/main/architecture-map)
-skill, adapted from its single-repository design to span nine.
+The front page is the overview. Each tool is a column, and the front door and
+model gateway are bars spanning the tools that use them, so a reader can see
+which tool sits behind which shared service without following lines. Picking a
+request lights its path with numbered steps; clicking a box opens the plain
+description and the technical details.
 
-## The rule this map keeps
+## Editing the overview
 
-**Prose, groups and flows are authored. Every number is derived.**
+Everything the overview says is in `src/poster/data.ts`:
 
-No scanner can say what a subsystem is *for*, and nobody can keep file counts
-honest by hand. Every sentence about what a service does was written by reading
-its code; every number under the drawing comes from
-`scripts/fleet-measure.mjs` reading the repositories.
-
-What each dimension carries is a choice, and it is not the skill's default:
-
-| Dimension | Means |
+| Export | Decides |
 |---|---|
-| Footprint | Lines of code, on a log ladder |
-| Height | How many journeys and calls run through the node |
-| Outline instead of solid | Outside the Lab, so nothing of ours to measure |
+| `TOOL_ORDER` | The columns, left to right |
+| `BEHIND_FRONT_DOOR`, `OWN_SIGN_IN`, `CALLS_GATEWAY` | Which bar spans which tools |
+| `MODEL_HOSTS` | The hosts under the gateway |
+| `BLOCKS` | Every box's text |
+| `JOURNEYS` | The requests a reader can follow |
 
-Sizing height by lines made the website builder the tallest thing on the map
-and left the authentication boundary every model call crosses — 511 lines in
-one file — among the shortest. Sizing floor area by *file* count let language
-convention drive the composition, since a React frontend splits into fifty
-small files and a Worker into five large ones. The reasoning is in the note
-above `centrality` in `graph.ts`.
+A bar must cover a contiguous run of columns. If a change to the wiring breaks
+that, the page throws at load, and the fix is to reorder `TOOL_ORDER`.
 
-The second half of the rule carries more weight: **add no edge that cannot be
-traced to a call in the code.** A plausible arrow is worse than a missing one,
-since the only thing that makes the drawing worth trusting is that its lines
-are calls. That holds when the missing connection is one people expect to find:
-the studios do not call the container service, and the map leaves that space
-empty.
+The wiring follows the code, with two simplifications: PDF Accessibility is
+drawn on the gateway, where it is moving, and the Sandbox's older direct
+provider settings are left out.
 
-## Layout
-
-| Path | What it is |
-|---|---|
-| `src/architecture/graph.ts` | The authored half: groups, nodes, edges, flows, prose |
-| `coverage.json` | Which node claims which files, per repo |
-| `fleet.config.json` | The repos measured, and what counts as source |
-| `scripts/fleet-measure.mjs` | The measurer; writes `measured.generated.ts` |
-| `src/architecture/core`, `stores`, `components` | Vendored from the skill — do not edit except `components/theme.ts` |
-| `src/theme.css` | The whole adaptation: the Lab's palette, handed over as `--am-*` tokens |
+Write the copy with people as the subjects (you, Lab staff, instructors, the
+Lab), and run it through prose-lint before publishing.
 
 ## Working on it
 
@@ -55,37 +38,9 @@ bun install
 bun run dev
 ```
 
-To refresh the measurements, have the nine repositories checked out beside this
-one and run:
-
-```bash
-bun run measure
-```
-
-It reads `origin/main` in each repo rather than the working copy, so a dirty
-checkout cannot move a building — and it reports any source file no node
-claims. Set `FLEET_SRC_ROOT` if the repos live elsewhere, or `FLEET_REF` to
-measure a different ref.
-
-`bun run measure:check` fails when the committed numbers are stale. It is not
-wired into CI, because CI has no access to the other nine repositories; run it
-locally after a change lands in the fleet.
-
-## Editing the map
-
-Adding or re-describing a service is a change to `graph.ts` and `coverage.json`
-only. Nothing else needs to move — the geometry re-derives itself.
-
-Two things to hold to when editing:
-
-- Say what a thing does before what it is made of. `whatItDoes` is plain
-  language for a colleague who has never heard of any of this; `howItsBuilt` is
-  the one decision a technical reader would otherwise wonder about.
-- If you cannot point at the code that makes a call, do not add the edge.
-
 ## Publishing
 
 Pushes to `main` build and deploy to GitHub Pages via
-`.github/workflows/pages.yml`. The site is deliberately public so it can be
-handed to colleagues by link; it describes architecture only, and carries no
-account identifiers, hostnames of private services, or credentials.
+`.github/workflows/pages.yml`. The site is public so it can be handed to
+colleagues by link; it describes architecture only, and carries no account
+identifiers, hostnames of private services, or credentials.

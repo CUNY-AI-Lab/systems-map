@@ -1,194 +1,247 @@
-import ArchitectureMap from './architecture/components/ArchitectureMap'
-import { ARCHITECTURE } from './architecture/graph'
-import { TOTALS } from './architecture/measured.generated'
-import FleetOutline from './FleetOutline'
-import MobileMap from './MobileMap'
-import { useWideEnough } from './useWideEnough'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { BLOCKS, JOURNEYS } from './poster/data'
+import Poster from './poster/Poster'
+import type { Block } from './poster/types'
 
 /**
- * The page around the map.
+ * The overview page: everything the Lab runs, on one screen.
  *
- * The map is a full-height application, so it takes the whole viewport once
- * you reach it. Above it sits a short plain-language introduction for someone
- * who has never heard of any of these services.
+ * The poster carries the whole story without a click. Picking a request
+ * lights its path with numbered steps; clicking a box opens a panel with the
+ * plain description and the technical detail.
  */
 
-const SHELL: React.CSSProperties = {
-  width: 'min(880px, calc(100% - 3rem))',
-  margin: '0 auto',
+const byId = new Map(BLOCKS.map((block) => [block.id, block]))
+
+function kindLabel(block: Block): string {
+  if (block.kind === 'tool') return 'A tool you can open'
+  if (block.kind === 'backbone') return 'Shared service, run by the Lab'
+  return `Run outside the Lab · ${block.runBy ?? ''}`
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+function Drawer({
+  block,
+  onClose,
+  onJourney,
+}: {
+  block: Block
+  onClose: () => void
+  onJourney: (id: string) => void
+}) {
+  const heading = useRef<HTMLHeadingElement>(null)
+  useEffect(() => {
+    heading.current?.focus()
+  }, [block.id])
+
+  const journeys = JOURNEYS.filter((journey) => journey.steps.some((step) => step.block === block.id))
+
   return (
-    <div>
-      <div
-        style={{
-          fontFamily: 'Outfit, sans-serif',
-          fontSize: '2rem',
-          fontWeight: 800,
-          letterSpacing: '-0.02em',
-          lineHeight: 1.1,
-          color: 'var(--navy)',
-        }}
-      >
-        {value}
-      </div>
-      <div
-        style={{
-          fontFamily: '"IBM Plex Mono", monospace',
-          fontSize: '0.72rem',
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
-          color: '#7d776a',
-        }}
-      >
-        {label}
-      </div>
-    </div>
+    <aside className="drawer" aria-labelledby="drawer-title">
+      <button type="button" className="drawer__close" onClick={onClose} aria-label="Close">
+        ×
+      </button>
+      <p className="drawer__kind">{kindLabel(block)}</p>
+      <h2 id="drawer-title" ref={heading} tabIndex={-1}>
+        {block.name}
+      </h2>
+      <p className="drawer__tag">{block.tag}</p>
+      <p>{block.whatItDoes}</p>
+      {block.href !== undefined && (
+        <a className="drawer__open" href={block.href} target="_blank" rel="noopener noreferrer">
+          Open {block.name} <span aria-hidden="true">→</span>
+        </a>
+      )}
+      {block.howItsBuilt !== undefined && (
+        <>
+          <h3>Technical details</h3>
+          <p>{block.howItsBuilt}</p>
+        </>
+      )}
+      {block.inside !== undefined && (
+        <>
+          <h3>Parts</h3>
+          <ul className="drawer__parts">
+            {block.inside.map((part) => (
+              <li key={part.name}>
+                <strong>{part.name}</strong>
+                {part.note}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      {journeys.length > 0 && (
+        <>
+          <h3>Requests through it</h3>
+          <div className="drawer__journeys">
+            {journeys.map((journey) => (
+              <button
+                key={journey.id}
+                type="button"
+                className="journey-btn"
+                onClick={() => onJourney(journey.id)}
+              >
+                {journey.name}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </aside>
   )
 }
 
 export default function App() {
-  const wideEnough = useWideEnough()
+  const [journeyId, setJourneyId] = useState<string | null>(null)
+  const [selected, setSelected] = useState<string | null>(null)
+  const [focused, setFocused] = useState<string | null>(null)
+
+  const journey = JOURNEYS.find((candidate) => candidate.id === journeyId) ?? null
+  const selectedBlock = selected === null ? null : (byId.get(selected) ?? null)
+
+  const close = useCallback(() => {
+    const opener = selected
+    setSelected(null)
+    if (opener !== null) {
+      requestAnimationFrame(() => {
+        document.querySelector<HTMLElement>(`[data-block="${opener}"]`)?.focus()
+      })
+    }
+  }, [selected])
+
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return
+      if (selected !== null) close()
+      else setJourneyId(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [selected, close])
 
   return (
     <>
-      <a className="skip-link" href="#map">
-        Skip to {wideEnough ? 'the map' : 'the outline'}
+      <a className="skip-link" href="#overview">
+        Skip to the overview
       </a>
 
-      <header style={{ background: 'var(--navy)', color: '#fff', padding: '4rem 0 3.5rem' }}>
-        <div style={SHELL}>
-          <p
-            style={{
-              fontFamily: '"IBM Plex Mono", monospace',
-              fontSize: '0.75rem',
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: 'rgba(255,255,255,0.72)',
-              margin: '0 0 0.8rem',
-            }}
-          >
-            CUNY AI Lab
-          </p>
-          <h1
-            style={{
-              fontFamily: 'Outfit, sans-serif',
-              fontSize: 'clamp(2.4rem, 6vw, 4rem)',
-              fontWeight: 800,
-              letterSpacing: '-0.03em',
-              lineHeight: 1.02,
-              margin: '0 0 1.2rem',
-            }}
-          >
-            The Lab&rsquo;s systems
-          </h1>
-          <p
-            style={{
-              fontSize: '1.15rem',
-              lineHeight: 1.6,
-              maxWidth: '60ch',
-              color: 'rgba(255,255,255,0.88)',
-              margin: 0,
-            }}
-          >
-            The Lab runs a handful of services that let people at CUNY sign in once and use AI
-            tools without handing their work to a vendor. This map covers what each service does
-            and how a request travels between them.
-          </p>
+      <header className="page-head">
+        <div className="shell">
+          <p className="eyebrow">CUNY AI Lab</p>
+          <div className="page-head__grid">
+            <h1>Systems map</h1>
+            <p className="page-head__lede">
+              You sign in once with your CUNY account and can use any of the Lab’s tools. We run one
+              gateway to language models for all of them, and keep one list of members.
+            </p>
+          </div>
         </div>
       </header>
 
-      <main>
-        <section style={{ ...SHELL, padding: '3rem 0 2.5rem' }}>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-              gap: '1.5rem',
-              borderTop: '4px solid var(--navy)',
-              paddingTop: '1.5rem',
-              marginBottom: '2.5rem',
-            }}
-          >
-            <Stat value={String(ARCHITECTURE.nodes.length)} label="Services mapped" />
-            <Stat value={String(TOTALS.repos)} label="Repositories" />
-            <Stat value={TOTALS.loc.toLocaleString('en-US')} label="Lines of code" />
-            <Stat value={String(ARCHITECTURE.flows.length)} label="Traced journeys" />
+      <main id="overview" className="shell">
+        <section className="journeys" aria-label="Follow a request">
+          <div className="journeys__row">
+            <span className="journeys__label">Follow a request</span>
+            {JOURNEYS.map((candidate) => (
+              <button
+                key={candidate.id}
+                type="button"
+                className="journey-btn"
+                aria-pressed={candidate.id === journeyId}
+                onClick={() => setJourneyId(candidate.id === journeyId ? null : candidate.id)}
+              >
+                {candidate.name}
+              </button>
+            ))}
+            {journey !== null && (
+              <button type="button" className="journey-btn journey-btn--clear" onClick={() => setJourneyId(null)}>
+                Show everything
+              </button>
+            )}
           </div>
-
-          <h2
-            style={{
-              fontFamily: 'Outfit, sans-serif',
-              fontSize: '1.6rem',
-              letterSpacing: '-0.02em',
-              margin: '0 0 0.8rem',
-            }}
-          >
-            How to read it
-          </h2>
-          {wideEnough ? (
-            <>
-              <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-                Each building is one service. Its footprint is how much code it holds, and its
-                height is how many of the journeys below run through it, so the tall buildings are
-                the ones almost everything depends on. The lines between them are the calls they
-                make to each other. Outlined shapes sit outside the Lab, where there is no code of
-                ours to measure.
-              </p>
-              <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-                Start with a journey from the left-hand list. A dot follows the route a request
-                takes, stopping at each service with a note on what happens there. Click a
-                building for a plain description, with the technical detail underneath.
-              </p>
-            </>
+          {journey !== null ? (
+            <ol className="steps" aria-live="polite">
+              {journey.steps.map((step, index) => (
+                <li
+                  key={index}
+                  onMouseEnter={() => setFocused(step.block)}
+                  onMouseLeave={() => setFocused(null)}
+                >
+                  {step.text}
+                </li>
+              ))}
+            </ol>
           ) : (
-            <p style={{ maxWidth: '65ch', margin: '0 0 1rem' }}>
-              Each building is one service: wider means more code, taller means more journeys run
-              through it. Outlined shapes sit outside the Lab. Pick a journey to watch a request
-              travel it, or tap a building to read about it. Drag to move the map, and pinch to
-              zoom.
+            <p className="hint">
+              Click any box for a plain description and the technical details, or pick a request
+              above to follow its path.
             </p>
           )}
         </section>
 
-        <section id="map" style={{ borderTop: '1px solid var(--rule)' }}>
-          {wideEnough ? (
-            <ArchitectureMap data={ARCHITECTURE} />
-          ) : (
-            <>
-              <MobileMap data={ARCHITECTURE} />
-              <FleetOutline data={ARCHITECTURE} />
-            </>
-          )}
+        <div className="sheet">
+          <div className="legend" aria-label="Key">
+            <span>
+              <i className="k-backbone" /> Shared services the Lab runs
+            </span>
+            <span>
+              <i className="k-tool" /> Tools you open
+            </span>
+            <span>
+              <i className="k-outside" /> Run by someone else
+            </span>
+            <span>
+              <i className="k-check" /> Access check
+            </span>
+          </div>
+          <Poster
+            journey={journey}
+            selected={selected}
+            focused={focused}
+            onSelect={(id) => setSelected(id === selected ? null : id)}
+          />
+        </div>
+
+        <section className="below">
+          <div>
+            <h2>Privacy</h2>
+            <p>
+              Inside the tools you appear under a pseudonym, a stand-in for your CUNY account that
+              can’t be traced back to it. We set every model request to zero data retention and
+              forbid providers to train on it. We offer only open-weight models, which we can move
+              to another host.
+            </p>
+          </div>
+          <div>
+            <h2>Access</h2>
+            <p>
+              Apply for yourself or for a class on the{' '}
+              <a href="https://ailab.gc.cuny.edu/request-access/">Lab’s website</a>. If you teach,
+              you get a class link to hand to students once your class is approved.
+            </p>
+          </div>
         </section>
       </main>
 
-      <footer
-        style={{
-          background: 'var(--navy)',
-          color: 'rgba(255,255,255,0.85)',
-          padding: '2.5rem 0',
-          fontSize: '0.92rem',
-        }}
-      >
-        <div style={SHELL}>
-          <p style={{ margin: '0 0 0.6rem' }}>
-            Built with the{' '}
-            <a
-              href="https://github.com/almendili/skills/tree/main/architecture-map"
-              style={{ color: '#ffb81c' }}
-            >
-              architecture-map
-            </a>{' '}
-            skill. Sizes and counts come from the source repositories; the descriptions are
-            written by hand.
+      {selectedBlock !== null && (
+        <Drawer
+          block={selectedBlock}
+          onClose={close}
+          onJourney={(id) => {
+            setJourneyId(id)
+            setSelected(null)
+          }}
+        />
+      )}
+
+      <footer className="page-foot">
+        <div className="shell">
+          <p>
+            We drew the connections from the Lab’s source code, simplifying in places, and wrote
+            the descriptions by hand.
           </p>
-          <p style={{ margin: 0 }}>
-            Questions about the Lab:{' '}
-            <a href="mailto:ailab@gc.cuny.edu" style={{ color: '#ffb81c' }}>
-              ailab@gc.cuny.edu
-            </a>
+          <p>
+            Questions about the Lab: <a href="mailto:ailab@gc.cuny.edu">ailab@gc.cuny.edu</a>
           </p>
         </div>
       </footer>

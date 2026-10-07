@@ -5,10 +5,6 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    // strict, and no stricter. The vendored architecture-map components are
-    // contracted to typecheck under `strict`; adding noUnusedLocals or
-    // noUncheckedIndexedAccess on top means every skill update arrives as a
-    // build break in files this repo does not own.
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "verbatimModuleSyntax": true,

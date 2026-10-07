@@ -1,10 +1,7 @@
 /**
- * The Lab's palette, handed to the map through the `--am-*` contract.
- *
- * The map's own theme.ts reads these and nothing else, so this file is the
- * whole adaptation: cream ground, navy ink, the Lab's action blue for the
- * live flow, and CUNY gold for focus — the same register as the Lab's other
- * front-facing pages.
+ * The Lab's palette and page basics: cream ground, navy ink, the Lab's action
+ * blue for links, and CUNY gold for focus, the same register as the Lab's
+ * other front-facing pages.
  */
 :root {
   --navy: #1d3a83;
@@ -13,19 +10,6 @@
   --gold: #ffb81c;
   --ink: #2b2b2b;
   --rule: #d9d3c7;
-
-  --am-surface: #fffdf8;
-  --am-border: #e3ded1;
-  --am-structure: #b9b0a0;
-  --am-ink-primary: #2b2b2b;
-  --am-ink-secondary: #565247;
-  --am-ink-tertiary: #7d776a;
-  --am-accent: #2a6fb8;
-  --am-accent-wash: #dfe9f5;
-
-  --am-font-title: Outfit, ui-sans-serif, system-ui, sans-serif;
-  --am-font-body: Inter, ui-sans-serif, system-ui, sans-serif;
-  --am-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   color-scheme: light;
   background: var(--cream);
@@ -68,24 +52,4 @@ a {
 
 .skip-link:focus {
   top: 1rem;
-}
-
-/**
- * Anything outside the Lab is drawn as an outline.
- *
- * The map sizes buildings from code the Lab owns, and it owns none of these
- * four. Measuring them at zero and drawing them like everything else made
- * CUNY Login — the identity root of the whole system — the flattest, smallest
- * shape on the map. An outline says "real, and not ours to measure".
- *
- * The hook is the accessibility label the map already sets on every building,
- * so this survives an update to the vendored components: if the selector ever
- * stops matching, the styling is lost and the map still draws.
- */
-#map svg g[aria-label="CUNY Login"] polygon,
-#map svg g[aria-label="Workers AI"] polygon,
-#map svg g[aria-label="OpenRouter"] polygon,
-#map svg g[aria-label="Email delivery"] polygon {
-  fill: none;
-  stroke-dasharray: 5 3;
 }
