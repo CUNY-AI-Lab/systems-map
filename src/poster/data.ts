@@ -4,9 +4,8 @@ import type { Block, Journey } from './types'
  * What the overview shows, written by hand.
  *
  * The wiring sets below decide every bar and line on the poster, so a change
- * here is a claim about the code. The drawing simplifies in two places: PDF
- * Accessibility is drawn behind the front door and on the gateway, where it
- * is moving, and the Sandbox's older direct provider settings are left out.
+ * here is a claim about the code. The drawing simplifies in one place: the
+ * Sandbox's older direct provider settings are left out.
  */
 
 /**
@@ -123,9 +122,10 @@ export const BLOCKS: Block[] = [
       'Upload a PDF and get back a tagged version that screen readers and other assistive ' +
       'technology can read, along with a list of anything left to fix by hand.',
     howItsBuilt:
-      'We use a language model to draft alt text and to read the hardest parts of a page, and our ' +
-      'own code to write the tags. We check every file with veraPDF, the standard validator, before ' +
-      'calling it finished. We host the app on the New Media Lab’s server at the Graduate Center.',
+      'We use an open-weight language model, through the Lab’s gateway, to draft alt text and to ' +
+      'help tag tables and forms, and our own code to write the tags. We check every file with ' +
+      'veraPDF, the standard validator, as the last step. You sign in at the Lab’s front door, and ' +
+      'we process your PDF on a graphics workstation we share with the New Media Lab.',
   },
   {
     id: 'sandbox',
